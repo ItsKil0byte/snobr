@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Будет подтягивать за собой и пользователей и категории
-        Post::factory(20)->create();
+        $users = User::factory()->count(10)->create();
+        $categories = Category::factory()->count(5)->create();
+
+        Post::factory()->count(25)->recycle([$users, $categories])->create();
     }
 }

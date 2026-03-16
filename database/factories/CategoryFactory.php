@@ -18,7 +18,7 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->randomElement(['PHP', 'Python', 'Java']),
+            'name' => $this->faker->hexColor(),
             'slug' => $this->faker->slug(),
         ];
     }

@@ -7,16 +7,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
-    /*
-     * Получить автора поста
+    /**
+     * Получить автора поста.
+     *
+     * @return BelongsTo
      */
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /*
-     * Получить категорию поста
+    /**
+     * Получить категорию поста.
+     *
+     * @return BelongsTo
      */
     public function category(): BelongsTo
     {

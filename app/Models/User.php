@@ -49,7 +49,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Получить все посты пользователя
+     * Получить все посты пользователя.
      *
      * @return HasMany
      */

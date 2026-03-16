@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    /*
+    /**
      * Получить все посты категории
+     *
+     * @return HasMany
      */
     public function posts(): HasMany
     {

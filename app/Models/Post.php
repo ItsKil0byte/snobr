@@ -7,6 +7,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
+
+    /**
+     * Атрибуты, что можно массово заполнять.
+     *
+     * Подробнее - https://laravel.su/docs/12.x/eloquent#mass-assignment
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'title',
+        'slug',
+        'content',
+        'published',
+        'views'
+    ];
+
     /**
      * Получить автора поста.
      *

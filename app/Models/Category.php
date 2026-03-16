@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
+
+    /**
+     * Атрибуты, что можно массово заполнять.
+     *
+     * Подробнее - https://laravel.su/docs/12.x/eloquent#mass-assignment
+     *
+     * @var list<string>
+     */
+    protected $fillable = ['name', 'slug'];
+
     /**
      * Получить все посты категории
      *

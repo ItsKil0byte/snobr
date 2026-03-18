@@ -10,6 +10,8 @@ FROM base as development
 
 USER root
 
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && apt-get install -y nodejs
+
 ARG USER_ID
 ARG GROUP_ID
 

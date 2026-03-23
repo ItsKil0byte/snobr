@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\PublishedScope;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory;
-    
+
     use SoftDeletes;
 
     /**
@@ -72,5 +73,15 @@ class Post extends Model
     public function likes(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_user', 'post_id', 'user_id');
+    }
+
+    /**
+     * Возвращает в запросах только опубликованные посты.
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new PublishedScope());
     }
 }

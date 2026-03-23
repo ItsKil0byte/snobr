@@ -42,7 +42,7 @@ class Post extends Model
      */
     public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
@@ -72,7 +72,7 @@ class Post extends Model
      */
     public function likes(): BelongsToMany
     {
-        return $this->belongsToMany(Post::class, 'post_user', 'post_id', 'user_id');
+        return $this->belongsToMany(User::class, 'post_user', 'post_id', 'user_id');
     }
 
     /**

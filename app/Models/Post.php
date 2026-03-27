@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Models\Scopes\PublishedScope;
+use App\Services\FileService;
 use Database\Factories\PostFactory;
+use DateTimeInterface;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -84,5 +87,17 @@ class Post extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new PublishedScope());
+    }
+
+    /**
+     * Получить url изображения поста.
+     *
+     * @return Attribute
+     */
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value ? app(FileService::class)->url($value) : null,
+        );
     }
 }

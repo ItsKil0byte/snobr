@@ -92,7 +92,9 @@ class User extends Authenticatable
     protected function image(): Attribute
     {
         return Attribute::make(
-            get: fn (string $value) => $value ? app(FileService::class)->url($value) : null,
+            get: fn (?string $value) => $value
+                ? app(FileService::class)->url($value)
+                : 'https://ui-avatars.com/api/?name=' . urlencode($this->name),
         );
     }
 }

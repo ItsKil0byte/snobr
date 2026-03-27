@@ -17,16 +17,19 @@
         @csrf
         @method('patch')
 
+        <div class="flex items-center gap-4 mb-6">
+            <div class="shrink-0">
+                <img class="h-20 w-20 rounded-full shadow-sm"
+                     src="{{ $user->image }}"
+                     alt="image" id="preview">
+            </div>
+            <input type="file" name="image">
+        </div>
+
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
-
-        <div>
-            <x-input-label for="image" :value="__('Image')"/>
-            <input type="file" name="image">
-            <img src="{{ $user->image }}" alt="image">
         </div>
 
         <div>
@@ -68,3 +71,16 @@
         </div>
     </form>
 </section>
+
+<script>
+    // Нагло украдено с просторов интернета.
+    const input = document.querySelector('input[name="image"]');
+    const preview = document.getElementById('preview');
+
+    input.onchange = () => {
+        const [file] = input.files;
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+        }
+    }
+</script>

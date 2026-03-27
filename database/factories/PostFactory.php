@@ -25,6 +25,7 @@ class PostFactory extends Factory
             'title' => $this->faker->sentence(),
             'slug' => $this->faker->slug(),
             'content' => $this->faker->paragraph(),
+            'image' => $this->faker->imageUrl(),
             'published' => $this->faker->boolean(),
             'views' => $this->faker->randomDigit(),
         ];

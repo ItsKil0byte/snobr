@@ -15,7 +15,7 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if(!$request->user() || $request->user()->role !== $role){
+        if(!$request->user() || $request->user()->role->value !== $role){
             abort(403, "У вас недостаточно прав!");
         }
         return $next($request);

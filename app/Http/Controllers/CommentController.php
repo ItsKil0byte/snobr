@@ -5,20 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Models\Post;
+use App\Services\SettingsService;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
-    private int $commentMinLen;
-    private int $commentMaxLen;
+    private SettingsService $settingsService;
 
-    public function __construct()
+    public function __construct(SettingsService $settingsService)
     {
-        $json = file_get_contents(resource_path('settings.json'));
-        $data = json_decode($json, true);
-
-        $this->commentMinLen = $data['comments']['length']['min'];
-        $this->commentMaxLen = $data['comments']['length']['max'];
+        $this->settingsService = $settingsService;
     }
 
     public function store(Request $request, Post $post)
@@ -26,7 +22,8 @@ class CommentController extends Controller
         $this->authorize('create', Comment::class);
 
         $valid = $request->validate([
-            'content' => 'required|string|min:' . $this->commentMinLen . '|max:' . $this->commentMaxLen ,
+            'content' => 'required|string|min:' . $this->settingsService->get('comments.length.min') . 
+            '|max:' . $this->settingsService->get('comments.length.max') ,
         ]);
 
         $comment = $post->comments()->create([

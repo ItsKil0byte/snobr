@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        View::composer('*', function ($view) {
+            $view->with(['settings' => app(SettingsService::class)]);
+        });
         Gate::define('access-admin-panel', function (User $user) {
             return $user->role === Role::ADMIN;
         });

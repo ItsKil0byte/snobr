@@ -74,4 +74,20 @@ class PostPolicy
 
         return $user->id === $post->user_id;
     }
+    
+    /**
+     * Может ли пользователь поставить лайк
+     */
+    public function like(User $user, Post $post): bool
+    {
+        if(!$user){
+            return false;
+        }
+
+        if(!$post->published && $user->id !== $post->user_id){
+            return false;
+        }
+
+        return true;
+    }
 }

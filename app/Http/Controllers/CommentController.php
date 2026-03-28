@@ -9,12 +9,24 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    private int $commentMinLen;
+    private int $commentMaxLen;
+
+    public function __construct()
+    {
+        $json = file_get_contents(resource_path('settings.json'));
+        $data = json_decode($json, true);
+
+        $this->commentMinLen = $data['comments']['length']['min'];
+        $this->commentMaxLen = $data['comments']['length']['max'];
+    }
+
     public function store(Request $request, Post $post)
     {
         $this->authorize('create', Comment::class);
 
         $valid = $request->validate([
-            'content' => 'required|string|min:1|max:1000',
+            'content' => 'required|string|min:' . $this->commentMinLen . '|max:' . $this->commentMaxLen ,
         ]);
 
         $comment = $post->comments()->create([

@@ -13,9 +13,18 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <div class="flex items-center gap-4 mb-6">
+            <div class="shrink-0">
+                <img class="h-20 w-20 rounded-full shadow-sm"
+                     src="{{ $user->image }}"
+                     alt="image" id="preview">
+            </div>
+            <input type="file" name="image">
+        </div>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -62,3 +71,16 @@
         </div>
     </form>
 </section>
+
+<script>
+    // Нагло украдено с просторов интернета.
+    const input = document.querySelector('input[name="image"]');
+    const preview = document.getElementById('preview');
+
+    input.onchange = () => {
+        const [file] = input.files;
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+        }
+    }
+</script>

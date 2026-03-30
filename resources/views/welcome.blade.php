@@ -11,6 +11,16 @@
             'description' => 'Описание 1',
             'image' => 'https://placehold.co/600x300?text=1',
             'content' => 'Текст статьи 1',
+            'links' => [
+                'upLeft' => 2,
+                'up' => 3,
+                'upRight' => 4,
+                'left' => 5,
+                'right' => 2,
+                'downLeft' => 3,
+                'down' => 4,
+                'downRight' => 5,
+            ],
         ],
         [
             'id' => 2,
@@ -22,6 +32,16 @@
             'description' => 'Описание 2',
             'image' => 'https://placehold.co/600x300?text=2',
             'content' => 'Текст статьи 2',
+            'links' => [
+                'upLeft' => 3,
+                'up' => 4,
+                'upRight' => 5,
+                'left' => 1,
+                'right' => 3,
+                'downLeft' => 4,
+                'down' => 5,
+                'downRight' => 1,
+            ],
         ],
         [
             'id' => 3,
@@ -33,10 +53,62 @@
             'description' => 'Описание 3',
             'image' => 'https://placehold.co/600x300?text=3',
             'content' => 'Текст статьи 3',
+            'links' => [
+                'upLeft' => 4,
+                'up' => 5,
+                'upRight' => 1,
+                'left' => 2,
+                'right' => 4,
+                'downLeft' => 5,
+                'down' => 1,
+                'downRight' => 2,
+            ],
+        ],
+        [
+            'id' => 4,
+            'author_photo' => 'https://placehold.co/60x60?text=4',
+            'author_name' => 'Имя автора 4',
+            'published_at' => 'Время 4',
+            'views' => '444',
+            'title' => 'Название 4',
+            'description' => 'Описание 4',
+            'image' => 'https://placehold.co/600x300?text=4',
+            'content' => 'Текст статьи 4',
+            'links' => [
+                'upLeft' => 5,
+                'up' => 1,
+                'upRight' => 2,
+                'left' => 3,
+                'right' => 5,
+                'downLeft' => 1,
+                'down' => 2,
+                'downRight' => 3,
+            ],
+        ],
+        [
+            'id' => 5,
+            'author_photo' => 'https://placehold.co/60x60?text=5',
+            'author_name' => 'Имя автора 5',
+            'published_at' => 'Время 5',
+            'views' => '555',
+            'title' => 'Название 5',
+            'description' => 'Описание 5',
+            'image' => 'https://placehold.co/600x300?text=5',
+            'content' => 'Текст статьи 5',
+            'links' => [
+                'upLeft' => 1,
+                'up' => 2,
+                'upRight' => 3,
+                'left' => 4,
+                'right' => 1,
+                'downLeft' => 2,
+                'down' => 3,
+                'downRight' => 4,
+            ],
         ],
     ];
 
-    $start = rand(0, count($posts) - 1);
+    $start = 0;
 @endphp
 
     <!DOCTYPE html>
@@ -176,6 +248,29 @@
             get post() {
                 return this.posts[this.i];
             },
+            move(dir) {
+                if (this.backDir === dir) {
+                    const last = this.history.pop();
+                    this.i = last.index;
+                    this.showPost = false;
+                    return;
+                }
+
+                const nextId = this.post.links[dir];
+                const nextIndex = this.posts.findIndex(post => post.id === nextId);
+
+                if (nextIndex === -1) {
+                    return;
+                }
+
+                this.history.push({
+                    index: this.i,
+                    back: this.backMap[dir],
+                });
+
+                this.i = nextIndex;
+                this.showPost = false;
+            },
             get backDir() {
                 if (!this.history.length) {
                     return null;
@@ -190,37 +285,7 @@
 
                 return this.names[dir];
             },
-            move(dir) {
-                if (this.backDir === dir) {
-                    const last = this.history.pop();
-                    this.i = last.index;
-                    this.showPost = false;
-                    return;
-                }
 
-                const next = this.rand();
-
-                this.history.push({
-                    index: this.i,
-                    back: this.backMap[dir],
-                });
-
-                this.i = next;
-                this.showPost = false;
-            },
-            rand() {
-                if (this.posts.length < 2) {
-                    return this.i;
-                }
-
-                let next = this.i;
-
-                while (next === this.i) {
-                    next = Math.floor(Math.random() * this.posts.length);
-                }
-
-                return next;
-            },
         };
     }
 </script>

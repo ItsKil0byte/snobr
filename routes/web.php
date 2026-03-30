@@ -3,6 +3,10 @@
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\UserController;
 use Dom\Comment;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +29,13 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
+
+        Route::resource('users', UserController::class);
+
+        Route::resource('categories', CategoryController::class);
+
+        Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
+        Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
     });
 
 Route::middleware('auth')->group(function () {

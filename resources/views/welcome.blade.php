@@ -68,47 +68,53 @@
     </div>
 
     <div class="content-row">
-        <button type="button" class="nav-button side-button" @click="move('left')" x-text="label('left')"></button>
+        <div class="side-block">
+            <button type="button" class="nav-button" @click="move('left')" x-text="label('left')"></button>
+        </div>
 
-        <article class="post-card">
-            <div class="post-meta">
-                <div class="author-block">
-                    <img :src="post.author_photo" alt="Фото автора" class="author-photo">
+        <div class="center-block">
+            <article class="post-card">
+                <div class="post-meta">
+                    <div class="author-block">
+                        <img :src="post.author_photo" alt="Фото автора" class="author-photo">
 
-                    <div>
-                        <div class="meta-label">Имя автора</div>
-                        <div x-text="post.author_name"></div>
+                        <div class="author-info">
+                            <div class="meta-label">Имя автора</div>
+                            <div x-text="post.author_name"></div>
+                        </div>
+                    </div>
+
+                    <div class="post-extra">
+                        <div>
+                            <div class="meta-label">Время</div>
+                            <div x-text="post.published_at"></div>
+                        </div>
+
+                        <div style="margin-top: 12px;">
+                            <div class="meta-label">Просмотры</div>
+                            <div x-text="post.views"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="post-extra">
-                    <div>
-                        <div class="meta-label">Время</div>
-                        <div x-text="post.published_at"></div>
-                    </div>
+                <div class="post-body">
+                    <div class="meta-label">Название</div>
+                    <h1 class="post-title" x-text="post.title"></h1>
 
-                    <div>
-                        <div class="meta-label">Просмотры</div>
-                        <div x-text="post.views"></div>
-                    </div>
+                    <div class="meta-label">Описание</div>
+                    <p class="post-description" x-text="post.description"></p>
+
+                    <div class="meta-label">Картинка</div>
+                    <img :src="post.image" alt="Картинка" class="post-image">
+
+                    <button type="button" class="post-button" @click="showPost = true">Просмотреть пост</button>
                 </div>
-            </div>
+            </article>
+        </div>
 
-            <div class="post-body">
-                <div class="meta-label">Название</div>
-                <h1 class="post-title" x-text="post.title"></h1>
-
-                <div class="meta-label">Описание</div>
-                <p class="post-description" x-text="post.description"></p>
-
-                <div class="meta-label">Картинка</div>
-                <img :src="post.image" alt="Картинка" class="post-image">
-
-                <button type="button" class="post-button" @click="showPost = true">Просмотреть пост</button>
-            </div>
-        </article>
-
-        <button type="button" class="nav-button side-button" @click="move('right')" x-text="label('right')"></button>
+        <div class="side-block">
+            <button type="button" class="nav-button" @click="move('right')" x-text="label('right')"></button>
+        </div>
     </div>
 
     <div class="nav-row">

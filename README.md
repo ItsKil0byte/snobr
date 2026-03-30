@@ -29,3 +29,8 @@ docker compose exec app npm run build
 ```bash
 docker compose exec app php artisan migrate:fresh --seed
 ```
+6. если хуета не грузит стили жать сюда
+```bash
+docker compose exec app rm -f /var/www/html/public/hot
+docker compose exec app npm run build
+```

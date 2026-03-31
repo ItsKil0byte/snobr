@@ -37,7 +37,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $user->posts()->delete();
+        $user->comments()->delete();
         $user->delete();
+
         return back()->with('success', 'User deleted');
     }
 }

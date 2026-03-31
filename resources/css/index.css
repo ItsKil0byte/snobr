@@ -171,6 +171,58 @@ body.index-page {
     margin-top: 0;
 }
 
+.map-modal-box {
+    max-width: 520px;
+}
+
+.map-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.map-node {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid #777;
+    border-radius: 14px;
+    background: #fff;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.map-node small {
+    font-size: 14px;
+}
+
+.map-node.visited {
+    background: #f3f3f3;
+}
+
+.map-node.current {
+    background: #e9e9e9;
+}
+
+.map-node.unknown {
+    background: #fafafa;
+}
+
+.map-node:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
+.map-close {
+    width: 100%;
+}
+
 @media (max-width: 900px) {
     .content-row {
         flex-direction: column;

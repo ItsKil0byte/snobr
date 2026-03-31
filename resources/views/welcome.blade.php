@@ -207,15 +207,70 @@
     </div>
 </template>
 
-<template x-if="showMap">
-    <div class="modal-wrap">
-        <div class="modal-box">
-            <div class="meta-label">Карта</div>
-            <p>Карта пути</p>
-            <button type="button" class="post-button" @click="showMap = false">Закрыть</button>
+<div x-show="showMap" class="modal-wrap" style="display: none;">
+    <div class="modal-box map-modal-box">
+        <div class="map-grid">
+            <button
+                type="button"
+                class="map-node"
+                :class="posts[0].id === post.id ? 'current' : (isVisited(posts[0].id) ? 'visited' : 'unknown')"
+                :disabled="!isVisited(posts[0].id) && posts[0].id !== post.id"
+                @click="openFromMap(posts[0].id)"
+            >
+                <span x-text="posts[0].id === post.id ? '👁' : (isVisited(posts[0].id) ? '✔' : '?')"></span>
+                <small x-text="posts[0].id === post.id ? 'текущий' : (isVisited(posts[0].id) ? 'прочитано' : 'не прочитано')"></small>
+            </button>
+
+            <button
+                type="button"
+                class="map-node"
+                :class="posts[1].id === post.id ? 'current' : (isVisited(posts[1].id) ? 'visited' : 'unknown')"
+                :disabled="!isVisited(posts[1].id) && posts[1].id !== post.id"
+                @click="openFromMap(posts[1].id)"
+            >
+                <span x-text="posts[1].id === post.id ? '👁' : (isVisited(posts[1].id) ? '✔' : '?')"></span>
+                <small x-text="posts[1].id === post.id ? 'текущий' : (isVisited(posts[1].id) ? 'прочитано' : 'не прочитано')"></small>
+            </button>
+
+            <button
+                type="button"
+                class="map-node"
+                :class="posts[2].id === post.id ? 'current' : (isVisited(posts[2].id) ? 'visited' : 'unknown')"
+                :disabled="!isVisited(posts[2].id) && posts[2].id !== post.id"
+                @click="openFromMap(posts[2].id)"
+            >
+                <span x-text="posts[2].id === post.id ? '👁' : (isVisited(posts[2].id) ? '✔' : '?')"></span>
+                <small x-text="posts[2].id === post.id ? 'текущий' : (isVisited(posts[2].id) ? 'прочитано' : 'не прочитано')"></small>
+            </button>
+
+            <button
+                type="button"
+                class="map-node"
+                :class="posts[3].id === post.id ? 'current' : (isVisited(posts[3].id) ? 'visited' : 'unknown')"
+                :disabled="!isVisited(posts[3].id) && posts[3].id !== post.id"
+                @click="openFromMap(posts[3].id)"
+            >
+                <span x-text="posts[3].id === post.id ? '👁' : (isVisited(posts[3].id) ? '✔' : '?')"></span>
+                <small x-text="posts[3].id === post.id ? 'текущий' : (isVisited(posts[3].id) ? 'прочитано' : 'не прочитано')"></small>
+            </button>
+
+            <button
+                type="button"
+                class="map-node"
+                :class="posts[4].id === post.id ? 'current' : (isVisited(posts[4].id) ? 'visited' : 'unknown')"
+                :disabled="!isVisited(posts[4].id) && posts[4].id !== post.id"
+                @click="openFromMap(posts[4].id)"
+            >
+                <span x-text="posts[4].id === post.id ? '👁' : (isVisited(posts[4].id) ? '✔' : '?')"></span>
+                <small x-text="posts[4].id === post.id ? 'текущий' : (isVisited(posts[4].id) ? 'прочитано' : 'не прочитано')"></small>
+            </button>
         </div>
+
+        <button type="button" class="post-button map-close" @click="showMap = false">
+            Закрыть
+        </button>
     </div>
-</template>
+</div>
 
 <script>
     function page(posts, start) {
@@ -284,6 +339,29 @@
                 }
 
                 return this.names[dir];
+            },
+            isVisited(id) {
+                return this.visitedIds().includes(id);
+            },
+            visitedIds() {
+                const ids = this.history.map(item => this.posts[item.index].id);
+
+                if (!ids.includes(this.post.id)) {
+                    ids.push(this.post.id);
+                }
+
+                return ids;
+            },
+            openFromMap(id) {
+                const nextIndex = this.posts.findIndex(post => post.id === id);
+
+                if (nextIndex === -1) {
+                    return;
+                }
+
+                this.i = nextIndex;
+                this.showMap = false;
+                this.showPost = false;
             },
 
         };

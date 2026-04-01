@@ -109,6 +109,54 @@
     ];
 
     $start = 0;
+
+    $dbPosts = App\Models\Post::query()
+        ->with('author:id,name,image')
+        ->latest()
+        ->take(25)
+        ->get();
+
+    if ($dbPosts->count() >= 5) {
+        $ids = $dbPosts->pluck('id')->all();
+
+        $randomLinkedId = static function (array $allIds, int $currentId): int {
+            $available = array_values(array_filter($allIds, static fn (int $id): bool => $id !== $currentId));
+
+            if ($available === []) {
+                return $currentId;
+            }
+
+            return $available[array_rand($available)];
+        };
+
+        $posts = $dbPosts->map(static function ($post) use ($ids, $randomLinkedId): array {
+            $content = trim(strip_tags((string) $post->content));
+
+            return [
+                'id' => $post->id,
+                'author_photo' => $post->author?->image ?: 'https://placehold.co/60x60?text=' . $post->id,
+                'author_name' => $post->author?->name ?: 'Author',
+                'published_at' => $post->created_at ? $post->created_at->format('d.m.Y H:i') : '-',
+                'views' => (string) $post->views,
+                'title' => $post->title,
+                'description' => $content,
+                'image' => $post->image ?: 'https://placehold.co/600x300?text=' . $post->id,
+                'content' => $content,
+                'links' => [
+                    'upLeft' => $randomLinkedId($ids, $post->id),
+                    'up' => $randomLinkedId($ids, $post->id),
+                    'upRight' => $randomLinkedId($ids, $post->id),
+                    'left' => $randomLinkedId($ids, $post->id),
+                    'right' => $randomLinkedId($ids, $post->id),
+                    'downLeft' => $randomLinkedId($ids, $post->id),
+                    'down' => $randomLinkedId($ids, $post->id),
+                    'downRight' => $randomLinkedId($ids, $post->id),
+                ],
+            ];
+        })->values()->all();
+
+        $start = random_int(0, count($posts) - 1);
+    }
 @endphp
 
     <!DOCTYPE html>
@@ -209,61 +257,29 @@
 
 <div x-show="showMap" class="modal-wrap" style="display: none;">
     <div class="modal-box map-modal-box">
-        <div class="map-grid">
-            <button
-                type="button"
-                class="map-node"
-                :class="posts[0].id === post.id ? 'current' : (isVisited(posts[0].id) ? 'visited' : 'unknown')"
-                :disabled="!isVisited(posts[0].id) && posts[0].id !== post.id"
-                @click="openFromMap(posts[0].id)"
-            >
-                <span x-text="posts[0].id === post.id ? '👁' : (isVisited(posts[0].id) ? '✔' : '?')"></span>
-                <small x-text="posts[0].id === post.id ? 'текущий' : (isVisited(posts[0].id) ? 'прочитано' : 'не прочитано')"></small>
-            </button>
+        <div class="map-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
+            <template x-for="cellIndex in mapCellCount()" :key="cellIndex">
+                <div>
+                    <template x-if="mapCell(cellIndex - 1)">
+                        <button
+                            type="button"
+                            class="map-node"
+                            :class="mapNodeClass(mapCell(cellIndex - 1).id)"
+                            :disabled="!canOpenFromMap(mapCell(cellIndex - 1).id)"
+                            @click="openFromMap(mapCell(cellIndex - 1).id)"
+                        >
+                            <span x-text="mapNodeIcon(mapCell(cellIndex - 1).id)"></span>
+                            <small x-text="mapNodeLabel(mapCell(cellIndex - 1).id)"></small>
+                        </button>
+                    </template>
 
-            <button
-                type="button"
-                class="map-node"
-                :class="posts[1].id === post.id ? 'current' : (isVisited(posts[1].id) ? 'visited' : 'unknown')"
-                :disabled="!isVisited(posts[1].id) && posts[1].id !== post.id"
-                @click="openFromMap(posts[1].id)"
-            >
-                <span x-text="posts[1].id === post.id ? '👁' : (isVisited(posts[1].id) ? '✔' : '?')"></span>
-                <small x-text="posts[1].id === post.id ? 'текущий' : (isVisited(posts[1].id) ? 'прочитано' : 'не прочитано')"></small>
-            </button>
-
-            <button
-                type="button"
-                class="map-node"
-                :class="posts[2].id === post.id ? 'current' : (isVisited(posts[2].id) ? 'visited' : 'unknown')"
-                :disabled="!isVisited(posts[2].id) && posts[2].id !== post.id"
-                @click="openFromMap(posts[2].id)"
-            >
-                <span x-text="posts[2].id === post.id ? '👁' : (isVisited(posts[2].id) ? '✔' : '?')"></span>
-                <small x-text="posts[2].id === post.id ? 'текущий' : (isVisited(posts[2].id) ? 'прочитано' : 'не прочитано')"></small>
-            </button>
-
-            <button
-                type="button"
-                class="map-node"
-                :class="posts[3].id === post.id ? 'current' : (isVisited(posts[3].id) ? 'visited' : 'unknown')"
-                :disabled="!isVisited(posts[3].id) && posts[3].id !== post.id"
-                @click="openFromMap(posts[3].id)"
-            >
-                <span x-text="posts[3].id === post.id ? '👁' : (isVisited(posts[3].id) ? '✔' : '?')"></span>
-                <small x-text="posts[3].id === post.id ? 'текущий' : (isVisited(posts[3].id) ? 'прочитано' : 'не прочитано')"></small>
-            </button>
-
-            <button
-                type="button"
-                class="map-node"
-                :class="posts[4].id === post.id ? 'current' : (isVisited(posts[4].id) ? 'visited' : 'unknown')"
-                :disabled="!isVisited(posts[4].id) && posts[4].id !== post.id"
-                @click="openFromMap(posts[4].id)"
-            >
-                <span x-text="posts[4].id === post.id ? '👁' : (isVisited(posts[4].id) ? '✔' : '?')"></span>
-                <small x-text="posts[4].id === post.id ? 'текущий' : (isVisited(posts[4].id) ? 'прочитано' : 'не прочитано')"></small>
-            </button>
+                    <template x-if="!mapCell(cellIndex - 1)">
+                        <div class="map-node map-empty">
+                            <span>•</span>
+                        </div>
+                    </template>
+                </div>
+            </template>
         </div>
 
         <button type="button" class="post-button map-close" @click="showMap = false">
@@ -280,6 +296,7 @@
             showPost: false,
             showMap: false,
             history: [],
+            mapSize: 5,
             names: {
                 upLeft: '↖',
                 up: '↑',
@@ -352,7 +369,82 @@
 
                 return ids;
             },
+            mapCell(index) {
+                return this.posts[index] ?? null;
+            },
+            mapCellCount() {
+                return this.mapSize * this.mapSize;
+            },
+            postById(id) {
+                return this.posts.find(post => post.id === id) ?? null;
+            },
+            areNeighbors(aId, bId) {
+                const a = this.postById(aId);
+                const b = this.postById(bId);
+
+                if (!a || !b) {
+                    return false;
+                }
+
+                return Object.values(a.links).includes(bId) || Object.values(b.links).includes(aId);
+            },
+            canOpenFromMap(id) {
+                if (this.post.id === id || this.isVisited(id)) {
+                    return true;
+                }
+
+                return this.visitedIds().some(visitedId => this.areNeighbors(visitedId, id));
+            },
+            mapNodeClass(id) {
+                if (this.post.id === id) {
+                    return 'current';
+                }
+
+                if (this.isVisited(id)) {
+                    return 'visited';
+                }
+
+                if (this.canOpenFromMap(id)) {
+                    return 'reachable';
+                }
+
+                return 'unknown';
+            },
+            mapNodeIcon(id) {
+                if (this.post.id === id) {
+                    return '👁';
+                }
+
+                if (this.isVisited(id)) {
+                    return '✔';
+                }
+
+                if (this.canOpenFromMap(id)) {
+                    return '○';
+                }
+
+                return '?';
+            },
+            mapNodeLabel(id) {
+                if (this.post.id === id) {
+                    return 'текущий';
+                }
+
+                if (this.isVisited(id)) {
+                    return 'прочитано';
+                }
+
+                if (this.canOpenFromMap(id)) {
+                    return 'доступно';
+                }
+
+                return 'не прочитано';
+            },
             openFromMap(id) {
+                if (!this.canOpenFromMap(id)) {
+                    return;
+                }
+
                 const nextIndex = this.posts.findIndex(post => post.id === id);
 
                 if (nextIndex === -1) {

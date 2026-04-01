@@ -172,19 +172,19 @@ body.index-page {
 }
 
 .map-modal-box {
-    max-width: 520px;
+    max-width: 760px;
 }
 
 .map-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
     margin-bottom: 16px;
 }
 
 .map-node {
     width: 100%;
-    min-height: 110px;
+    min-height: 86px;
     border: 1px solid #777;
     border-radius: 14px;
     background: #fff;
@@ -195,15 +195,19 @@ body.index-page {
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .map-node small {
-    font-size: 14px;
+    font-size: 11px;
 }
 
 .map-node.visited {
     background: #f3f3f3;
+}
+
+.map-node.reachable {
+    background: #f6f6f6;
 }
 
 .map-node.current {
@@ -217,6 +221,12 @@ body.index-page {
 .map-node:disabled {
     cursor: default;
     opacity: 1;
+}
+
+.map-node.map-empty {
+    border-style: dashed;
+    color: #9a9a9a;
+    cursor: default;
 }
 
 .map-close {

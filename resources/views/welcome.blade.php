@@ -1,311 +1,231 @@
-
-@php
-    $posts = [
-        [
-            'id' => 1,
-            'author_photo' => 'https://placehold.co/60x60?text=1',
-            'author_name' => 'Имя автора 1',
-            'published_at' => 'Время 1',
-            'views' => '111',
-            'title' => 'Название 1',
-            'description' => 'Описание 1',
-            'image' => 'https://placehold.co/600x300?text=1',
-            'content' => 'Текст статьи 1',
-            'links' => [
-                'upLeft' => 2,
-                'up' => 3,
-                'upRight' => 4,
-                'left' => 5,
-                'right' => 2,
-                'downLeft' => 3,
-                'down' => 4,
-                'downRight' => 5,
-            ],
-        ],
-        [
-            'id' => 2,
-            'author_photo' => 'https://placehold.co/60x60?text=2',
-            'author_name' => 'Имя автора 2',
-            'published_at' => 'Время 2',
-            'views' => '222',
-            'title' => 'Название 2',
-            'description' => 'Описание 2',
-            'image' => 'https://placehold.co/600x300?text=2',
-            'content' => 'Текст статьи 2',
-            'links' => [
-                'upLeft' => 3,
-                'up' => 4,
-                'upRight' => 5,
-                'left' => 1,
-                'right' => 3,
-                'downLeft' => 4,
-                'down' => 5,
-                'downRight' => 1,
-            ],
-        ],
-        [
-            'id' => 3,
-            'author_photo' => 'https://placehold.co/60x60?text=3',
-            'author_name' => 'Имя автора 3',
-            'published_at' => 'Время 3',
-            'views' => '333',
-            'title' => 'Название 3',
-            'description' => 'Описание 3',
-            'image' => 'https://placehold.co/600x300?text=3',
-            'content' => 'Текст статьи 3',
-            'links' => [
-                'upLeft' => 4,
-                'up' => 5,
-                'upRight' => 1,
-                'left' => 2,
-                'right' => 4,
-                'downLeft' => 5,
-                'down' => 1,
-                'downRight' => 2,
-            ],
-        ],
-        [
-            'id' => 4,
-            'author_photo' => 'https://placehold.co/60x60?text=4',
-            'author_name' => 'Имя автора 4',
-            'published_at' => 'Время 4',
-            'views' => '444',
-            'title' => 'Название 4',
-            'description' => 'Описание 4',
-            'image' => 'https://placehold.co/600x300?text=4',
-            'content' => 'Текст статьи 4',
-            'links' => [
-                'upLeft' => 5,
-                'up' => 1,
-                'upRight' => 2,
-                'left' => 3,
-                'right' => 5,
-                'downLeft' => 1,
-                'down' => 2,
-                'downRight' => 3,
-            ],
-        ],
-        [
-            'id' => 5,
-            'author_photo' => 'https://placehold.co/60x60?text=5',
-            'author_name' => 'Имя автора 5',
-            'published_at' => 'Время 5',
-            'views' => '555',
-            'title' => 'Название 5',
-            'description' => 'Описание 5',
-            'image' => 'https://placehold.co/600x300?text=5',
-            'content' => 'Текст статьи 5',
-            'links' => [
-                'upLeft' => 1,
-                'up' => 2,
-                'upRight' => 3,
-                'left' => 4,
-                'right' => 1,
-                'downLeft' => 2,
-                'down' => 3,
-                'downRight' => 4,
-            ],
-        ],
-    ];
-
-    $start = 0;
-
-    $dbPosts = App\Models\Post::query()
-        ->with('author:id,name,image')
-        ->latest()
-        ->take(25)
-        ->get();
-
-    if ($dbPosts->count() >= 5) {
-        $ids = $dbPosts->pluck('id')->all();
-
-        $randomLinkedId = static function (array $allIds, int $currentId): int {
-            $available = array_values(array_filter($allIds, static fn (int $id): bool => $id !== $currentId));
-
-            if ($available === []) {
-                return $currentId;
-            }
-
-            return $available[array_rand($available)];
-        };
-
-        $posts = $dbPosts->map(static function ($post) use ($ids, $randomLinkedId): array {
-            $content = trim(strip_tags((string) $post->content));
-
-            return [
-                'id' => $post->id,
-                'author_photo' => $post->author?->image ?: 'https://placehold.co/60x60?text=' . $post->id,
-                'author_name' => $post->author?->name ?: 'Author',
-                'published_at' => $post->created_at ? $post->created_at->format('d.m.Y H:i') : '-',
-                'views' => (string) $post->views,
-                'title' => $post->title,
-                'description' => $content,
-                'image' => $post->image ?: 'https://placehold.co/600x300?text=' . $post->id,
-                'content' => $content,
-                'links' => [
-                    'upLeft' => $randomLinkedId($ids, $post->id),
-                    'up' => $randomLinkedId($ids, $post->id),
-                    'upRight' => $randomLinkedId($ids, $post->id),
-                    'left' => $randomLinkedId($ids, $post->id),
-                    'right' => $randomLinkedId($ids, $post->id),
-                    'downLeft' => $randomLinkedId($ids, $post->id),
-                    'down' => $randomLinkedId($ids, $post->id),
-                    'downRight' => $randomLinkedId($ids, $post->id),
-                ],
-            ];
-        })->values()->all();
-
-        $start = random_int(0, count($posts) - 1);
-    }
-@endphp
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>SNOBR</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body x-data='page(@json($posts), {{ $start }})' class="index-page">
+<body
+    x-data='page({
+        posts: @json($posts ?? []),
+        start: {{ $start ?? 0 }},
+        isAuthenticated: @json(auth()->check()),
+        loginUrl: @json(route('login')),
+        currentUserName: @json(auth()->user()?->name),
+        oldCommentPostId: @json(old('post_id')),
+        oldCommentContent: @json(old('content')),
+        oldCommentError: @json($errors->first('content')),
+    })'
+    x-init="init()"
+    class="index-page"
+>
 <header class="topbar">
     <div class="logo">SNOBR</div>
 
     <div class="topbar-actions">
+        <a href="{{ route('home') }}" class="topbar-link">Главная</a>
         <button type="button" class="topbar-button" @click="showMap = true">Карта</button>
 
-        @if (Route::has('login'))
-            <a href="{{ route('login') }}" class="topbar-link">Вход</a>
-        @endif
+        @auth
+            <a href="{{ route('posts.create') }}" class="topbar-link">Создать пост</a>
+            <a href="{{ route('profile.edit') }}" class="topbar-link">Профиль</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="topbar-button">Выход</button>
+            </form>
+        @else
+            @if (Route::has('login'))
+                <a href="{{ route('login') }}" class="topbar-link">Вход</a>
+            @endif
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}" class="topbar-link">Регистрация</a>
+            @endif
+        @endauth
     </div>
 </header>
 
 <main class="page">
-    <div class="nav-row">
-        <button type="button" class="nav-button" @click="move('upLeft')" x-text="label('upLeft')"></button>
-        <button type="button" class="nav-button" @click="move('up')" x-text="label('up')"></button>
-        <button type="button" class="nav-button" @click="move('upRight')" x-text="label('upRight')"></button>
-    </div>
+    @if (session('success'))
+        <div class="flash-box">{{ session('success') }}</div>
+    @endif
 
-    <div class="content-row">
-        <div class="side-block">
-            <button type="button" class="nav-button" @click="move('left')" x-text="label('left')"></button>
+    @if (($postCount ?? 0) === 0)
+        <article class="post-card">
+            <p>Посты не найдены. Нужны данные в базе.</p>
+        </article>
+    @else
+        <div class="nav-row">
+            <button type="button" class="nav-button" @click="move('upLeft')" x-text="label('upLeft')"></button>
+            <button type="button" class="nav-button" @click="move('up')" x-text="label('up')"></button>
+            <button type="button" class="nav-button" @click="move('upRight')" x-text="label('upRight')"></button>
         </div>
 
-        <div class="center-block">
-            <article class="post-card">
-                <div class="post-meta">
-                    <div class="author-block">
-                        <img :src="post.author_photo" alt="Фото автора" class="author-photo">
+        <div class="content-row">
+            <div class="side-block">
+                <button type="button" class="nav-button" @click="move('left')" x-text="label('left')"></button>
+            </div>
 
-                        <div class="author-info">
-                            <div class="meta-label">Имя автора</div>
-                            <div x-text="post.author_name"></div>
+            <div class="center-block">
+                <article class="post-card">
+                    <div class="post-meta">
+                        <div class="author-block">
+                            <img :src="post.author_photo" alt="author" class="author-photo">
+
+                            <div class="author-info">
+                                <div class="author-name" x-text="post.author_name"></div>
+                                <div class="meta-line" x-text="post.published_at"></div>
+                            </div>
                         </div>
+
+                        <div class="post-category" x-text="post.category_name"></div>
                     </div>
 
-                    <div class="post-extra">
-                        <div>
-                            <div class="meta-label">Время</div>
-                            <div x-text="post.published_at"></div>
+                    <div class="post-body">
+                        <h1 class="post-title" x-text="post.title"></h1>
+                        <p class="post-description" x-text="post.excerpt"></p>
+                        <img :src="post.image" alt="image" class="post-image">
+
+                        <div class="post-stats">
+                            <span x-text="'Просмотры: ' + post.views"></span>
+                            <span x-text="'Лайки: ' + post.likes_count"></span>
+                            <span x-text="'Комментарии: ' + post.comments_count"></span>
                         </div>
 
-                        <div style="margin-top: 12px;">
-                            <div class="meta-label">Просмотры</div>
-                            <div x-text="post.views"></div>
+                        <div class="post-actions">
+                            <button type="button" class="post-button" @click="showPost = true">Просмотреть пост</button>
+                            <button type="button" class="post-button" @click="toggleLike" :disabled="likePending" x-text="post.liked ? 'Убрать лайк' : 'Поставить лайк'"></button>
                         </div>
                     </div>
-                </div>
+                </article>
+            </div>
 
-                <div class="post-body">
-                    <div class="meta-label">Название</div>
-                    <h1 class="post-title" x-text="post.title"></h1>
-
-                    <div class="meta-label">Описание</div>
-                    <p class="post-description" x-text="post.description"></p>
-
-                    <div class="meta-label">Картинка</div>
-                    <img :src="post.image" alt="Картинка" class="post-image">
-
-                    <button type="button" class="post-button" @click="showPost = true">Просмотреть пост</button>
-                </div>
-            </article>
+            <div class="side-block">
+                <button type="button" class="nav-button" @click="move('right')" x-text="label('right')"></button>
+            </div>
         </div>
 
-        <div class="side-block">
-            <button type="button" class="nav-button" @click="move('right')" x-text="label('right')"></button>
+        <div class="nav-row">
+            <button type="button" class="nav-button" @click="move('downLeft')" x-text="label('downLeft')"></button>
+            <button type="button" class="nav-button" @click="move('down')" x-text="label('down')"></button>
+            <button type="button" class="nav-button" @click="move('downRight')" x-text="label('downRight')"></button>
         </div>
-    </div>
-
-    <div class="nav-row">
-        <button type="button" class="nav-button" @click="move('downLeft')" x-text="label('downLeft')"></button>
-        <button type="button" class="nav-button" @click="move('down')" x-text="label('down')"></button>
-        <button type="button" class="nav-button" @click="move('downRight')" x-text="label('downRight')"></button>
-    </div>
+    @endif
 </main>
 
-<template x-if="showPost">
-    <div class="modal-wrap">
-        <div class="modal-box">
-            <div class="meta-label">Полный текст</div>
-            <h2 class="modal-title" x-text="post.title"></h2>
-            <p x-text="post.content"></p>
-            <button type="button" class="post-button" @click="showPost = false">Закрыть</button>
-        </div>
-    </div>
-</template>
+@if (($postCount ?? 0) > 0)
+    <template x-if="showPost">
+        <div class="modal-wrap">
+            <div class="modal-box">
+                <div class="meta-line">
+                    <span x-text="post.author_name"></span>
+                    <span>•</span>
+                    <span x-text="post.published_at"></span>
+                </div>
+                <h2 class="modal-title" x-text="post.title"></h2>
+                <img :src="post.image" alt="image" class="modal-image">
+                <div class="modal-article" x-html="formatArticle(post.content)"></div>
 
-<div x-show="showMap" class="modal-wrap" style="display: none;">
-    <div class="modal-box map-modal-box">
-        <div class="map-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
-            <template x-for="cellIndex in mapCellCount()" :key="cellIndex">
-                <div>
-                    <template x-if="mapCell(cellIndex - 1)">
-                        <button
-                            type="button"
-                            class="map-node"
-                            :class="mapNodeClass(mapCell(cellIndex - 1).id)"
-                            :disabled="!canOpenFromMap(mapCell(cellIndex - 1).id)"
-                            @click="openFromMap(mapCell(cellIndex - 1).id)"
-                        >
-                            <span x-text="mapNodeIcon(mapCell(cellIndex - 1).id)"></span>
-                            <small x-text="mapNodeLabel(mapCell(cellIndex - 1).id)"></small>
-                        </button>
-                    </template>
+                <div class="meta-label comments-label">Комментарии</div>
 
-                    <template x-if="!mapCell(cellIndex - 1)">
-                        <div class="map-node map-empty">
-                            <span>•</span>
+                <template x-if="!post.comments.length">
+                    <p>Пока нет комментариев.</p>
+                </template>
+
+                <div class="comments-list">
+                    <template x-for="comment in post.comments" :key="comment.id">
+                        <div class="comment-item">
+                            <div class="comment-head">
+                                <span x-text="comment.author_name"></span>
+                                <span x-text="comment.created_at"></span>
+                            </div>
+                            <div x-text="comment.content"></div>
                         </div>
                     </template>
                 </div>
-            </template>
-        </div>
 
-        <button type="button" class="post-button map-close" @click="showMap = false">
-            Закрыть
-        </button>
+                @auth
+                    <form method="POST" :action="post.comment_url" class="comment-form" @submit.prevent="submitComment">
+                        @csrf
+                        <input type="hidden" name="post_id" :value="post.id">
+                        <textarea name="content" x-model="commentDrafts[post.id]" @input="commentError = ''"></textarea>
+
+                        <div class="comment-error" x-show="commentError" x-text="commentError"></div>
+
+                        <button type="submit" class="post-button" :disabled="commentPending" x-text="commentPending ? 'Отправка...' : 'Отправить комментарий'"></button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="topbar-link">Войдите, чтобы комментировать</a>
+                @endauth
+
+                <button type="button" class="post-button" @click="showPost = false">Закрыть</button>
+            </div>
+        </div>
+    </template>
+
+    <div x-show="showMap" class="modal-wrap" style="display: none;">
+        <div class="modal-box map-modal-box">
+            <div class="map-grid" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
+                <template x-for="cellIndex in mapCellCount()" :key="cellIndex">
+                    <div>
+                        <template x-if="mapCell(cellIndex - 1)">
+                            <button
+                                type="button"
+                                class="map-node"
+                                :class="mapNodeClass(mapCell(cellIndex - 1).id)"
+                                :disabled="!canOpenFromMap(mapCell(cellIndex - 1).id)"
+                                @click="openFromMap(mapCell(cellIndex - 1).id)"
+                            >
+                                <span x-text="mapNodeIcon(mapCell(cellIndex - 1).id)"></span>
+                                <small x-text="mapNodeLabel(mapCell(cellIndex - 1).id)"></small>
+                            </button>
+                        </template>
+
+                        <template x-if="!mapCell(cellIndex - 1)">
+                            <div class="map-node map-empty">
+                                <span>.</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <button type="button" class="post-button map-close" @click="showMap = false">
+                Закрыть
+            </button>
+        </div>
     </div>
-</div>
+@endif
 
 <script>
-    function page(posts, start) {
+    function page(payload) {
         return {
-            posts: posts,
-            i: start,
-            showPost: false,
+            posts: payload.posts ?? [],
+            i: payload.start ?? 0,
+            isAuthenticated: payload.isAuthenticated ?? false,
+            loginUrl: payload.loginUrl ?? '/',
+            oldCommentPostId: payload.oldCommentPostId,
+            oldCommentContent: payload.oldCommentContent ?? '',
+            oldCommentError: payload.oldCommentError ?? '',
+            currentUserName: payload.currentUserName ?? 'Вы',
+            showPost: Boolean(payload.oldCommentPostId),
             showMap: false,
             history: [],
             mapSize: 5,
+            likePending: false,
+            commentPending: false,
+            commentError: '',
+            commentDrafts: {},
             names: {
-                upLeft: '↖',
-                up: '↑',
-                upRight: '↗',
-                left: '←',
-                right: '→',
-                downLeft: '↙',
-                down: '↓',
-                downRight: '↘',
+                upLeft: '\u2196',
+                up: '\u2191',
+                upRight: '\u2197',
+                left: '\u2190',
+                right: '\u2192',
+                downLeft: '\u2199',
+                down: '\u2193',
+                downRight: '\u2198',
             },
             backMap: {
                 upLeft: 'downRight',
@@ -317,21 +237,44 @@
                 down: 'up',
                 downRight: 'upLeft',
             },
+            init() {
+                if (this.oldCommentPostId) {
+                    this.commentDrafts[this.oldCommentPostId] = this.oldCommentContent;
+
+                    if (this.post && String(this.post.id) === String(this.oldCommentPostId) && this.oldCommentError) {
+                        this.commentError = this.oldCommentError;
+                    }
+                }
+            },
             get post() {
-                return this.posts[this.i];
+                return this.posts[this.i] ?? null;
             },
             move(dir) {
+                if (!this.post) {
+                    return;
+                }
+
                 if (this.backDir === dir) {
                     const last = this.history.pop();
+
+                    if (!last) {
+                        return;
+                    }
+
                     this.i = last.index;
                     this.showPost = false;
                     return;
                 }
 
                 const nextId = this.post.links[dir];
+
+                if (!nextId) {
+                    return;
+                }
+
                 const nextIndex = this.posts.findIndex(post => post.id === nextId);
 
-                if (nextIndex === -1) {
+                if (nextIndex === -1 || nextIndex === this.i) {
                     return;
                 }
 
@@ -342,6 +285,7 @@
 
                 this.i = nextIndex;
                 this.showPost = false;
+                this.commentError = '';
             },
             get backDir() {
                 if (!this.history.length) {
@@ -361,9 +305,9 @@
                 return this.visitedIds().includes(id);
             },
             visitedIds() {
-                const ids = this.history.map(item => this.posts[item.index].id);
+                const ids = this.history.map(item => this.posts[item.index]?.id).filter(Boolean);
 
-                if (!ids.includes(this.post.id)) {
+                if (this.post && !ids.includes(this.post.id)) {
                     ids.push(this.post.id);
                 }
 
@@ -375,28 +319,11 @@
             mapCellCount() {
                 return this.mapSize * this.mapSize;
             },
-            postById(id) {
-                return this.posts.find(post => post.id === id) ?? null;
-            },
-            areNeighbors(aId, bId) {
-                const a = this.postById(aId);
-                const b = this.postById(bId);
-
-                if (!a || !b) {
-                    return false;
-                }
-
-                return Object.values(a.links).includes(bId) || Object.values(b.links).includes(aId);
-            },
             canOpenFromMap(id) {
-                if (this.post.id === id || this.isVisited(id)) {
-                    return true;
-                }
-
-                return this.visitedIds().some(visitedId => this.areNeighbors(visitedId, id));
+                return this.post && (this.post.id === id || this.isVisited(id));
             },
             mapNodeClass(id) {
-                if (this.post.id === id) {
+                if (this.post && this.post.id === id) {
                     return 'current';
                 }
 
@@ -404,38 +331,26 @@
                     return 'visited';
                 }
 
-                if (this.canOpenFromMap(id)) {
-                    return 'reachable';
-                }
-
                 return 'unknown';
             },
             mapNodeIcon(id) {
-                if (this.post.id === id) {
-                    return '👁';
+                if (this.post && this.post.id === id) {
+                    return '\u{1F441}';
                 }
 
                 if (this.isVisited(id)) {
-                    return '✔';
-                }
-
-                if (this.canOpenFromMap(id)) {
-                    return '○';
+                    return '\u2714';
                 }
 
                 return '?';
             },
             mapNodeLabel(id) {
-                if (this.post.id === id) {
+                if (this.post && this.post.id === id) {
                     return 'текущий';
                 }
 
                 if (this.isVisited(id)) {
                     return 'прочитано';
-                }
-
-                if (this.canOpenFromMap(id)) {
-                    return 'доступно';
                 }
 
                 return 'не прочитано';
@@ -454,8 +369,145 @@
                 this.i = nextIndex;
                 this.showMap = false;
                 this.showPost = false;
+                this.commentError = '';
             },
+            toggleLike() {
+                if (!this.post || !this.post.like_url) {
+                    return;
+                }
 
+                if (!this.isAuthenticated) {
+                    window.location.href = this.loginUrl;
+                    return;
+                }
+
+                if (this.likePending) {
+                    return;
+                }
+
+                this.likePending = true;
+                const prevLiked = Boolean(this.post.liked);
+                const prevCount = Number(this.post.likes_count) || 0;
+                this.post.liked = !prevLiked;
+                this.post.likes_count = Math.max(0, prevCount + (this.post.liked ? 1 : -1));
+
+                window.axios.post(this.post.like_url)
+                    .then((response) => {
+                        const data = response?.data ?? {};
+
+                        if (typeof data.liked === 'boolean') {
+                            this.post.liked = data.liked;
+                        }
+
+                        if (typeof data.likesCount === 'number') {
+                            this.post.likes_count = data.likesCount;
+                        }
+                    })
+                    .catch((error) => {
+                        this.post.liked = prevLiked;
+                        this.post.likes_count = prevCount;
+
+                        if (error?.response?.status === 401) {
+                            window.location.href = this.loginUrl;
+                        }
+                    })
+                    .finally(() => {
+                        this.likePending = false;
+                    });
+            },
+            submitComment() {
+                if (!this.post || !this.post.comment_url) {
+                    return;
+                }
+
+                if (!this.isAuthenticated) {
+                    window.location.href = this.loginUrl;
+                    return;
+                }
+
+                if (this.commentPending) {
+                    return;
+                }
+
+                const postId = this.post.id;
+                const content = String(this.commentDrafts[postId] ?? '').trim();
+
+                if (!content.length) {
+                    this.commentError = 'Введите комментарий';
+                    return;
+                }
+
+                this.commentPending = true;
+                this.commentError = '';
+
+                window.axios.post(
+                    this.post.comment_url,
+                    {
+                        content,
+                        post_id: postId,
+                    },
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                        },
+                    }
+                ).then((response) => {
+                    const redirectedUrl = response?.request?.responseURL ?? '';
+
+                    if (redirectedUrl.includes('/login')) {
+                        window.location.href = this.loginUrl;
+                        return;
+                    }
+
+                    this.post.comments.unshift({
+                        id: `new-${Date.now()}`,
+                        author_name: this.currentUserName,
+                        created_at: this.formatDate(new Date()),
+                        content,
+                    });
+                    this.post.comments_count = Number(this.post.comments_count || 0) + 1;
+                    this.commentDrafts[postId] = '';
+                }).catch((error) => {
+                    if (error?.response?.status === 401) {
+                        window.location.href = this.loginUrl;
+                        return;
+                    }
+
+                    if (error?.response?.status === 422) {
+                        this.commentError = error?.response?.data?.errors?.content?.[0] ?? 'Ошибка валидации комментария';
+                        return;
+                    }
+
+                    this.commentError = 'Не удалось отправить комментарий';
+                }).finally(() => {
+                    this.commentPending = false;
+                });
+            },
+            formatArticle(content) {
+                const text = String(content ?? '').trim();
+
+                if (!text.length) {
+                    return '';
+                }
+
+                return text
+                    .split(/\n{2,}/)
+                    .map((part) => `<p>${this.escapeHtml(part.trim()).replace(/\n/g, '<br>')}</p>`)
+                    .join('');
+            },
+            escapeHtml(value) {
+                return value
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            },
+            formatDate(date) {
+                const pad = (value) => String(value).padStart(2, '0');
+
+                return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            },
         };
     }
 </script>

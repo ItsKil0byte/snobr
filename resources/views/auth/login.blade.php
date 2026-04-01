@@ -2,7 +2,12 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <div class="mb-4 rounded-md border border-gray-300 bg-gray-50 p-3 text-sm text-gray-700">
+        <div><strong>Demo:</strong> demo@example.com / demo</div>
+        <div><strong>Admin:</strong> admin@example.com / admin</div>
+    </div>
+
+    <form method="POST" action="{{ route('login', [], false) }}">
         @csrf
 
         <!-- Email Address -->
@@ -27,7 +32,7 @@
         <!-- Remember Me -->
         <div class="block mt-4">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember" value="1" @checked(old('remember'))>
                 <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
             </label>
         </div>

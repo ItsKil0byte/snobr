@@ -33,7 +33,7 @@ class CategoryController extends Controller
         ]);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Категория создана');
+            ->with('success', 'Category created');
     }
 
     public function edit(Category $category)

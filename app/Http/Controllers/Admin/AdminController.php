@@ -9,6 +9,8 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $this->authorize('access-admin-panel');
+        
         return view('admin.dashboard');
     }
 }

@@ -11,6 +11,8 @@ class SettingsController extends Controller
 {
     public function edit(SettingsService $settings)
     {
+        $this->authorize('settings.view');
+
         return view('admin.settings', [
             'settingsData' => Arr::dot($settings->all())
         ]);
@@ -18,6 +20,8 @@ class SettingsController extends Controller
 
     public function update(Request $request, SettingsService $settings)
     {
+        $this->authorize('settings.update');
+
         $data = [];
         foreach ($request->except('_token') as $key => $value) {
             $dotKey = str_replace('_', '.', $key);

@@ -18,11 +18,13 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('updateRole', $user);
         return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        $this->authorize('updateRole', $user);
         $request->validate([
             'name' => 'required',
             'role' => 'required|in:user,moderator,admin',
@@ -37,6 +39,8 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        $this->authorize('delete', $user);
+        
         $user->posts()->delete();
         $user->comments()->delete();
         $user->delete();

@@ -32,5 +32,12 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-admin-panel', function (User $user) {
             return $user->role === Role::ADMIN;
         });
+        Gate::define('settings.view', function (User $user) {
+            return $user->role === Role::ADMIN;
+        });
+
+        Gate::define('settings.update', function (User $user) {
+            return $user->role === Role::ADMIN;
+        });
     }
 }

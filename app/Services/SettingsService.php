@@ -53,4 +53,25 @@ class SettingsService
 
         // https://www.php.net/manual/en/json.constants.php#119565
     }
+
+    public function all(): array
+    {
+        return $this->settings;
+    }
+
+    public function setMany(array $values): void
+    {
+        foreach ($values as $key => $value) {
+            Arr::set($this->settings, $key, $value);
+        }
+
+        file_put_contents(
+            $this->path,
+            json_encode(
+                $this->settings,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE |
+                JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK
+            )
+        );
+    }
 }

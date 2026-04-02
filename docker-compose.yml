@@ -1,6 +1,7 @@
 services:
   app:
-    build: 
+
+    build:
       context: .
       dockerfile: .docker/Dockerfile
       target: development
@@ -11,6 +12,7 @@ services:
     environment:
       # Настройка для отладки в Laravel
         APP_DEBUG: ${APP_DEBUG:-true}
+        PHP_OPCACHE_ENABLE: ${PHP_OPCACHE_ENABLE:-1}
         # Настройка для подключения к базе данных
         DB_CONNECTION: ${DB_CONNECTION:-mysql}
         DB_HOST: ${DB_HOST:-database}
